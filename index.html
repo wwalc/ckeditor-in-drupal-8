@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>CKEditor in Drupal 8</title>
+
+	<meta name="description" content="">
+	<meta name="author" content="Wiktor Walc, Robert Mikolajuk, Aleksander Nowodzinski">
+
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="src/reveal/css/reveal.min.css">
+	<link rel="stylesheet" href="src/fullscreen-img/fullscreen-img.css">
+	<link rel="stylesheet" href="src/reveal/css/theme/sky.css" id="theme">
+	<link rel="stylesheet" href="css/custom.css">
+
+	<!-- For syntax highlighting -->
+	<link rel="stylesheet" href="src/reveal/lib/css/zenburn.css">
+
+	<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+	<script>
+		if (window.location.search.match(/print-pdf/gi)) {
+			// Default reveal print file
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'src/reveal/css/print/pdf.css';
+			document.getElementsByTagName('head')[0].appendChild(link);
+
+			// Custom print file
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'css/pdf.css';
+			document.getElementsByTagName('head')[0].appendChild(link);
+		}
+	</script>
+
+	<!--[if lt IE 9]>
+	<script src="src/reveal/lib/js/html5shiv.js"></script>
+	<![endif]-->
+
+</head>
+
+<body>
+
+<div class="reveal">
+
+	<div class="slides">
+		<section>
+			<h1>CKEditor in Drupal 8</h1>
+			<ul>
+				<li>Wiktor Walc <a href="https://twitter.com/w_walc">@w_walc</a></li>
+				<li>Robert Mikolajuk <a href="https://twitter.com/vokiel">@vokiel</a></li>
+				<li>Aleksander Nowodzinski <a href="https://twitter.com/anowodzinski">@anowodzinski</a></li>
+			</ul>
+			<p></p>
+
+			<p>
+				Follow CKEditor on Twitter: <a href="https://twitter.com/ckeditor">@ckeditor</a>
+			</p>
+		</section>
+
+		<section>
+			<h1>Agenda</h1>
+			<ul>
+				<li>Why existing WYSIWYG solutions for Drupal 6/7 are bad</li>
+				<li>New features offered by CKEditor &amp; Text Editor modules</li>
+				<li>What is ACF and how it works</li>
+				<li>Widgets: why use them and how they handle images</li>
+				<li>Writing and adding plugins to CKEditor</li>
+				<li>Security: HTML Filter vs. ACF</li>
+				<li>Migration</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>Drupal 6/7</h2>
+			<ul>
+				<li>Contributed modules: WYSIWYG or CKEditor</li>
+				<li>Troublesome installation in both cases</li>
+				<li>Poor UX</li>
+				<li>Popular WTFs:
+					<ul>
+						<li><cite><em>Images are lost after saving node</em></cite> (CKEditor Toolbar vs. Text format configuration mismatch)</li>
+						<li>Confusion: installed CKEditor module but need to download CKEditor (the editor)? o.O</li>
+						<li>Which module to install?</li>
+					</ul>
+				</li>
+			</ul>
+		</section>
+
+		<section>
+			<section>
+				<h2>Drupal 8</h2>
+				<ul>
+					<li>Select text editor straight in "Text formats and editors" administration page</li>
+					<li>Drag &amp; drop toolbar configurator for CKEditor</li>
+					<li>HTML filter settings automatically updated</li>
+					<li>Nice API for registering additional CKEditor plugins, enhancing CKEditor configuration form</li>
+				</ul>
+			</section>
+
+			<section>
+				<h1>Demo #1</h1>
+				<p>How CKEditor toolbar configuration triggers an automatic update of Allowed HTML tags list</p>
+			</section>
+
+			<section class="video-description">
+				<h2>Video #1</h2>
+				<p>Basic HTML text format is configured:</p>
+				<ul>
+					<li>CKEditor button (Table) is added to the toolbar using D&amp;D</li>
+					<li>Allowed HTML tags list is automatically updated with &lt;table&gt;, &lt;tr&gt;, &lt;th&gt;, &lt;td&gt; tags</li>
+					<li>Another button (Underline) is added using D&amp;D to the toolbar</li>
+					<li>&lt;u&gt; is automatically added to Allowed HTML tags list</li>
+					<li>The Underline button is removed from toolbar</li>
+					<li>&lt;u&gt; is automatically removed from Allowed HTML tags list</li>
+					<li>The Styles dropdown is added using D&amp;D</li>
+					<li>A configuration tab for the Styles plugin is immediately shown</li>
+					<li>After defining styles for &lt;h2&gt; and &lt;h3&gt;, the entered configuration is immediately picked up and the list of allowed HTML tags is again extended</li>
+				</ul>
+			</section>
+
+			<section>
+				<video width="920" height="628" src="videos/text_format_configuration1.mp4" type="video/mp4"
+					   controls data-autoplay>
+					<!--
+					<track kind="captions" src="videos/captions/text_format_configuration1.srt" srclang="en">
+					<track kind="descriptions" src="videos/descriptions/text_format_configuration1.srt" srclang="en">
+					-->
+				</video>
+			</section>
+
+			<section>
+				<h1>Demo #2</h1>
+				<p>How automatic update of Allowed HTML tags list works when buttons (features) are removed</p>
+			</section>
+
+			<section class="video-description">
+				<h2>Video #2</h2>
+				<p>Basic HTML text format is configured again:</p>
+				<ul>
+					<li>Strike button is added to the toolbar</li>
+					<li>&lt;s&gt; is automatically added to Allowed HTML tags list</li>
+					<li>The form with text format configuration is saved</li>
+					<li>An article with striked text (&lt;s&gt; tag) is created</li>
+					<li>Basic HTML text format is configured again</li>
+					<li>Strike button is removed from CKEditor toolbar</li>
+					<li>This time &lt;s&gt; tag is not removed automatically, because it could have been used in existing content</li>
+					<li>An article is edited again in CKEditor</li>
+					<li>Altough Strike button is no longer available in CKEditor toolbar, &lt;s&gt; tag is not removed</li>
+				</ul>
+			</section>
+
+			<section>
+				<video width="920" height="628" src="videos/text_format_configuration2.mp4" type="video/mp4"
+					   controls data-autoplay></video>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h3>ACF <small>(Advanced Content Filter)</small></h3>
+				<ul>
+					<li>Everything that is not allowed is removed</li>
+					<li>Works also when pasting content &ndash; WYSIWYG!
+						<p><small>No need to submit form and wait for the server-side filter to remove disallowed tags to see the final markup</small></p></li>
+					<li>Smart (transformations - stripping tags, not content)</li>
+				</ul>
+			</section>
+
+			<section>
+				<p>Switching text formats? Remember about ACF</p>
+				<img src="images/changing_text_format.png" width="310" height="229" />
+			</section>
+
+			<section>
+				<h1>Demo #3</h1>
+				<p>Live example of how ACF works on different text formats</p>
+			</section>
+
+			<section class="video-description">
+				<h2>Video #3</h2>
+				<p>Results of pasting content in different text formats:</p>
+				<ul>
+					<li>CKEditor is enabled on Restricted HTML format</li>
+					<li>An article is created with Restricted HTML text format</li>
+					<li>In CKEditor source mode &lt;script&gt; and &lt;footer&gt; are pasted</li>
+					<li>After switching to WYSIWYG mode, both disallowed tags are gone but content of a footer is kept</li>
+					<li>Part of an HTML page with headers and a table is copied and pasted in Google Chrome; both tags are disallowed in this format</li>
+					<li>ACF removed disallowed tags, but again the content from headers and table cells is preserved</li>
+					<li>The format of article is changed to Basic HTML</li>
+					<li>The same content is pasted again; this time tables and headers are not removed, because we allow it in this format</li>
+					<li>Font colors are disallowed, however, so inline styles are removed by CKEditor</li>
+				</ul>
+			</section>
+
+			<section class="video-description">
+				<p>Results of pasting content in different text formats (continued)</p>
+				<ul>
+					<li>The format of article is changed to Full HTML</li>
+					<li>The same content is pasted again; this time nothing is removed because ACF is disabled here</li>
+					<li>The same portion of the HTML page is copied & pasted in Firefox</li>
+					<li>Even though ACF is disabled, the font color isn't copied. Why? Because browsers are different: Firefox copies just the HMTL structure, while Chrome copies HTML and "the layout". Need consistency? Use ACF.</li>
+				</ul>
+			</section>
+
+			<section>
+				<video width="920" height="628" src="videos/acf.mp4" type="video/mp4" controls data-autoplay></video>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>Editing possibilities</h2>
+				<ul>
+					<li>Classic editor</li>
+					<li>Inline editor</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Administration backend</h2>
+
+				<h3>"Classic" editor</h3>
+				<ul>
+					<li>&lt;iframe&gt; &ndash; based</li>
+					<li>CSS-styles are <strong>not</strong> inherited from admin theme</li>
+					<li>Themes may register dedicated stylesheet for CKEditor through an entry in their .info file:
+					</li>
+				</ul>
+				<p class="code">
+					<code class="no-highlight">ckeditor_stylesheets[] = css/ckeditor-iframe.css</code>
+				</p>
+			</section>
+
+			<section>
+				<p class="pdf-only">Classic editor in action, note the CSS styles in WYSIWYG area:</p>
+				<img src="images/classic_editor.png" class="standalone-img" />
+			</section>
+
+			<section>
+				<h2>Quick editing</h2>
+
+				<h3>"Inline" editor</h3>
+				<ul>
+					<li>No &lt;iframe&gt;!</li>
+					<li>CSS-styles are inherited; the content looks exactly the same both in editor and on website.</li>
+					<li class="fragment">Real WYSIWYG, finally!</li>
+				</ul>
+			</section>
+
+			<section>
+				<p class="pdf-only">Handy quick edit option in Drupal 8:</p>
+				<img src="images/node_with_quickedit_link.png" class="standalone-img" />
+			</section>
+
+			<section>
+				<p class="pdf-only">Editing node using quick edit feature:</p>
+				<img src="images/quickedit.png" class="standalone-img" />
+				<p class="pdf-only">Note that CSS styles did not change!</p>
+			</section>
+
+		</section>
+
+		<section>
+			<h2>Styling content</h2>
+			<ul>
+				<li>CSS style definitions set in themes CSS files</li>
+				<li>Selected style definitions (using CSS classes) available in Styles dropdown list</li>
+				<li>Separate: semantic markup and visual presentation</li>
+				<li>Handy: consistent styling, less work overall</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>Inline styles?</h2>
+			<p class="morespace">How do I enable <em>Text/Background Color</em> buttons in Drupal 8?</p>
+			<ul>
+				<li>CKEditor in Drupal Core != CKEditor "Full" preset</li>
+				<li>But... additional plugins might be added!</li>
+			</ul>
+			<img src="images/extend-ckeditor.png" width="697" height="356" />
+		</section>
+
+		<section>
+			<p class="pdf-only">Enabled Color buttons in Full HTML text format:</p>
+			<img src="images/full_html_colors.png" class="standalone-img" />
+		</section>
+		<!--
+		<section>
+			<h2>Drupal-specific plugins</h2>
+			<h3>Image</h3>
+			<ul>
+				<li>Widget that support captions</li>
+				<li>Server-side rendering (by caption filter)</li>
+				<li>Integrated uploads</li>
+			</ul>
+			<h3>Link</h3>
+		</section>
+
+		<!-- olek -->
+		<section>
+			<section>
+				<h2>Widgets</h2>
+				<p class="fragment">Widgets are rich-content <strong style="color: #fff; background: #333333; padding: 0 .5em;">units</strong>.</p>
+			</section>
+
+			<section>
+				<h2>Why Widgets?</h2>
+				<p>Developers need</p>
+				<ul>
+					<li>Structured data in WYSIWYG</li>
+					<li>Separation of layers</li>
+					<li>Fancy UI</li>
+				</ul>
+
+				<p style="margin: 1em 0">but still...</p>
+
+				<ul>
+					<li>Something easy to create</li>
+					<li>Customizable</li>
+					<li>Bulletproof</li>
+					<li>Perfect UX</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>About widgets</h2>
+				<ul>
+					<li>CKEditor <strong>4.3+</strong></li>
+					<li>CKEditor Widget Plugin</li>
+					<li>Editable parts (separate Allowed Content rules)</li>
+					<li>Common <strong>dialog</strong></li>
+					<li>Common <strong>context menu</strong></li>
+					<li>Select and delete as a <strong>whole</strong></li>
+					<li>Same look and feel for all instances</li>
+					<li>Drag and drop as a <strong>whole</strong></li>
+					<li>Widget styles</li>
+					<li>Cross-browser</li>
+				</ul>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>Widget in WYSIWYG</h2>
+				<img src="images/highlight_image.png" alt="Image in WYSIWYG" />
+			</section>
+
+			<section>
+				<h2>Widget in DOM</h2>
+				<img src="images/wysiwyg_image.png" alt="DOM structure" />
+				<p class="fragment">It is <strong>fragmented</strong>!</p>
+			</section>
+
+			<section>
+				<h2>Widget in database</h2>
+				<img src="images/database_image.png" alt="Database structure" />
+				<p class="fragment">It is <strong>structured</strong>!</p>
+			</section>
+
+			<section>
+				<img src="images/downcast_upcast.png" alt="Downcast and upcast" />
+			</section>
+
+			<section>
+				<h2>It's simple!</h2>
+				<pre><code data-trim>
+editor.widgets.add( 'demoWidget', {
+    // Permit specific tags, attributes, classes, styles in the editor.
+    allowedContent: '...',
+
+    // This is how the widget looks in the editor.
+    template: '<tag>...</tag>',
+
+    upcast: function( element ) {
+        if ( Element is right ) {
+            // ...then convert it into WYSIWYG widget...
+            return element;
+        }
+    },
+
+    downcast: function( element ) {
+        // Convert widget back into DATA...
+        return element;
+    }
+} );
+				</code></pre>
+				<p>More in the <a href="http://docs.ckeditor.com/#!/guide/widget_sdk_intro">official guide</a></p>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>New Image Plugin</h2>
+				<ul>
+					<li>Widget!</li>
+					<li>Captions</li>
+					<li>Dynamic resizer</li>
+					<li>Drag and drop</li>
+					<li>Copy and paste</li>
+					<li>Integrated w/ dialogs</li>
+				</ul>
+				<br><br>
+				<p class="fragment">Let's see it in action...</p>
+			</section>
+
+			<section>
+				<h2>Video #4</h2>
+				<p>New Image Plugin in Drupal</p>
+			</section>
+
+			<section>
+				<video width="920" height="628" src="videos/drupalImage.mp4" type="video/mp4" controls data-autoplay></video>
+			</section>
+
+			<section>
+				<h2>New <span style="text-transform:none">vs.</span> old</h2>
+				<ul>
+					<li>Widget implementation is bulletproof</li>
+					<li>Widgets are immutable (Advanced Content Filter)</li>
+					<li>Safe interaction with surroundings (drag and drop)</li>
+					<li>Integrated with Drupal</li>
+					<li>Simpler</li>
+				</ul>
+			</section>
+		</section>
+		<!-- /olek -->
+
+		<!--
+		<section>
+			<h2>Widgets</h2>
+			<ul>
+				<li>Mathjax</li>
+				<li>Codesnippet</li>
+				<li>Oembed media</li>
+			</ul>
+		</section>
+		-->
+
+		<section>
+			<section>
+				<h2>Writing plugins</h2>
+				<ul>
+					<li>Adding new plugins (e.g., from addons repo)</li>
+					<li>Extending the list of configuration options</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Adding new plugins</h2>
+				<ul>
+					<li class="fragment">
+						<p>CKEditor Addons repository:</p>
+						<a href="http://ckeditor.com/addons/plugins/all" target="_blank">http://ckeditor.com/addons/plugins/all</a>
+					</li>
+					<li class="fragment">
+						<p>Sample <strong>Greetings Card</strong> plugin:</p>
+						<a href="http://ckeditor.com/addon/xmas" target="_blank">http://ckeditor.com/addon/xmas</a>
+					</li>
+				</ul>
+			</section>
+
+			<section class="addon-directory-structure">
+				<h2>Directory structure</h2>
+				<iframe src="iframe/drupal_addon_structure.html" allowfullscreen></iframe>
+				<img src="images/drupal_addon_structure.jpg" alt="CKEditor addon directory structure" />
+			</section>
+
+			<section>
+				<h3>YAML</h3>
+				<p>DRUPAL_ROOT/modules/xmas/xmas.info.yml</p>
+				<pre><code data-trim contenteditable class>
+name: CKEditor Greetings Card
+type: module
+description: >
+  A plugin that brings up a holiday greetings card.
+  The plugin can be customized with a different image, border, and text.
+core: 8.x
+package: CKEditor
+version: VERSION
+dependencies:
+- ckeditor
+				</code></pre>
+			</section>
+
+			<section>
+				<h2>Ready for install</h2>
+				<img src="images/drupal_extend.jpg" width="968" />
+			</section>
+
+			<section>
+				<h2>JavaScript fixes</h2>
+				<small>DRUPAL_ROOT/modules/xmas/js/plugins/xmas/plugin.js</small>
+				<pre><code data-trim contenteditable class="js">
+(function ($, Drupal, drupalSettings, CKEDITOR) {
+
+  /* existing plugin code */
+
+})(jQuery, Drupal, drupalSettings, CKEDITOR);
+				</code></pre>
+			</section>
+
+			<section>
+				<h3 class="no-text-transform">Namespace Drupal\ckeditor</h3>
+				<p><a class="fragment" href="https://api.drupal.org/api/drupal/namespace/Drupal!ckeditor/8" target="_blank">https://api.drupal.org/api/drupal/namespace/Drupal!ckeditor/8</a></p>
+				<ul>
+					<li class="fragment"><a href="https://api.drupal.org/api/drupal/core!modules!ckeditor!lib!Drupal!ckeditor!CKEditorPluginInterface.php/interface/CKEditorPluginInterface/8" target="_blank">CKEditorPluginInterface</a></li>
+					<li class="fragment"><a href="https://api.drupal.org/api/drupal/core!modules!ckeditor!lib!Drupal!ckeditor!CKEditorPluginButtonsInterface.php/interface/CKEditorPluginButtonsInterface/8" target="_blank">CKEditorPluginButtonsInterface</a></li>
+					<li class="fragment"><a href="https://api.drupal.org/api/drupal/core!modules!ckeditor!lib!Drupal!ckeditor!CKEditorPluginConfigurableInterface.php/interface/CKEditorPluginConfigurableInterface/8" target="_blank">CKEditorPluginConfigurableInterface</a></li>
+					<li class="fragment"><a href="https://api.drupal.org/api/drupal/core!modules!ckeditor!lib!Drupal!ckeditor!CKEditorPluginContextualInterface.php/interface/CKEditorPluginContextualInterface/8" target="_blank">CKEditorPluginContextualInterface</a></li>
+				</ul>
+			</section>
+
+			<section>
+				<h3>Plugin file</h3>
+				<small>DRUPAL_ROOT/modules/xmas/lib/Drupal/xmas/Plugin/CKEditorPlugin/Xmas.php</small>
+				<pre class="not-in-pdf"><code data-trim contenteditable class="php">
+&lt;?php
+/**
+ * @file
+ * Contains \Drupal\xmas\Plugin\CKEditorPlugin\Xmas.
+ */
+
+namespace Drupal\xmas\Plugin\CKEditorPlugin;
+
+use Drupal\ckeditor\CKEditorPluginBase;
+// or all separately
+use Drupal\Core\Plugin\PluginBase;
+use Drupal\ckeditor\CKEditorPluginInterface;
+use Drupal\ckeditor\CKEditorPluginButtonsInterface;
+
+use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
+use Drupal\ckeditor\CKEditorPluginContextualInterface;
+
+use Drupal\editor\Entity\Editor;
+
+use Drupal\ckeditor\Annotation\CKEditorPlugin;
+use Drupal\Core\Annotation\Translation;
+/**
+ * Defines the "Xmas" plugin.
+ * @see MetaContextual
+ * @see MetaButton
+ * @see MetaContextualAndButton
+ *
+ * @CKEditorPlugin(
+ *   id = "xmas",
+ *   label = @Translation("Xmas")
+ * )
+ */
+//class Xmas extends PluginBase implements CKEditorPluginInterface, CKEditorPluginButtonsInterface, CKEditorPluginConfigurableInterface, CKEditorPluginContextualInterface {
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface, CKEditorPluginContextualInterface {
+
+}
+				</code></pre>
+        <pre class="pdf-only"><code data-trim contenteditable class="php">
+/**
+ * @file
+ * Contains \Drupal\xmas\Plugin\CKEditorPlugin\Xmas.
+ */
+
+namespace Drupal\xmas\Plugin\CKEditorPlugin;
+
+use Drupal\ckeditor\CKEditorPluginBase;
+use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
+use Drupal\ckeditor\CKEditorPluginContextualInterface;
+
+use Drupal\editor\Entity\Editor;
+
+use Drupal\ckeditor\Annotation\CKEditorPlugin;
+use Drupal\Core\Annotation\Translation;
+
+/**
+* Defines the "Xmas" plugin.
+* @CKEditorPlugin(
+*   id = "xmas",
+*   label = @Translation("Xmas")
+* )
+*/
+class Xmas extends CKEditorPluginBase
+  implements CKEditorPluginConfigurableInterface, CKEditorPluginContextualInterface {}
+        </code></pre>
+			</section>
+
+			<section>
+				<h3 class="no-text-transform">CKEditorPluginInterface</h3>
+				<pre class="not-in-pdf"><code data-trim contenteditable class="php">
+&lt;?php
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface {
+
+  /**
+    * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::getDependencies().
+    * Returns a list of plugins this plugin requires.
+    */
+  public function getDependencies(Editor $editor) {
+    return [];
+  }
+
+  /**
+    * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::getLibraries().
+    * Returns a list of libraries this plugin requires.
+    */
+  public function getLibraries(Editor $editor) {
+    return [];
+  }
+
+  /**
+    * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::isInternal().
+    * Indicates if this plugin is part of the optimized CKEditor build.
+    */
+  public function isInternal() {
+    return FALSE;
+  }
+
+}
+				</code></pre>
+        <pre class="pdf-only"><code data-trim contenteditable class="php">
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface {
+
+  /**
+    * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::getDependencies().
+    */
+  public function getDependencies(Editor $editor) {
+    return [];
+  }
+
+  /**
+    * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::getLibraries().
+    */
+  public function getLibraries(Editor $editor) {
+    return [];
+  }
+
+  /**
+    * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::isInternal().
+    */
+  public function isInternal() {
+    return FALSE;
+  }
+
+  // ..
+}
+        </code></pre>
+			</section>
+
+      <section class="pdf-only">
+        <h3 class="no-text-transform">CKEditorPluginInterface continued...</h3>
+        <pre class="not-in-pdf"><code data-trim contenteditable class="php">
+&lt;?php
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface {
+
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::getFile().
+   * Returns the Drupal root-relative file path to the plugin JavaScript file.
+   */
+  public function getFile() {
+    return drupal_get_path('module', 'xmas') . '/js/plugins/xmas/plugin.js';
+  }
+
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::getConfig().
+   * Returns the additions to CKEDITOR.config for a specific CKEditor instance.
+   */
+  public function getConfig(Editor $editor) {
+    $config = [
+      'xmas_wishes' => '<p class="big">Ho! Ho! Ho!</p>',
+      'xmas_signature' => 'Santa Claus',
+      'xmas_link' => 'en.wikipedia.org/wiki/Santa_Claus'
+    ];
+
+    $settings = $editor->getSettings();
+    if (isset($settings['plugins']['xmas'])) {
+      $config = $settings['plugins']['xmas'];
+    }
+
+    return $config;
+  }
+
+}
+				</code></pre>
+        <pre class="pdf-only"><code data-trim contenteditable class="php">
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface {
+  //..
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::getFile().
+   */
+  public function getFile() {
+    return drupal_get_path('module', 'xmas') . '/js/plugins/xmas/plugin.js';
+  }
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginInterface::getConfig().
+   */
+  public function getConfig(Editor $editor) {
+    $config = [
+      'xmas_wishes' => '<p class="big">Ho! Ho! Ho!</p>',
+      'xmas_signature' => 'Santa Claus',
+      'xmas_link' => 'en.wikipedia.org/wiki/Santa_Claus'
+    ];
+
+    $settings = $editor->getSettings();
+    if (isset($settings['plugins']['xmas'])) {
+      $config = $settings['plugins']['xmas'];
+    }
+
+    return $config;
+  }
+}
+        </code></pre>
+
+      </section>
+			<section>
+				<h3 class="no-text-transform">CKEditorPluginButtonsInterface</h3>
+				<pre class="not-in-pdf"><code data-trim contenteditable class="php">
+&lt;?php
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface {
+  // ...
+
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginButtonsInterface::getButtons().
+   * Returns the buttons that this plugin provides, along with metadata.
+   */
+  public function getButtons() {
+    return [
+      'xmas' => [
+        'label' => t('Xmas'),
+        'image' => drupal_get_path('module', 'xmas') . '/js/plugins/xmas/icons/xmas.png',
+      ]
+    ];
+  }
+
+}
+				</code></pre>
+				<pre class="pdf-only"><code data-trim contenteditable class="php">
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface {
+  // ...
+
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginButtonsInterface::getButtons().
+   * Returns the buttons that this plugin provides, along with metadata.
+   */
+  public function getButtons() {
+    return [
+      'xmas' => [
+        'label' => t('Xmas'),
+        'image' => drupal_get_path('module', 'xmas').'/js/plugins/xmas/icons/xmas.png',
+      ]
+    ];
+  }
+
+}
+				</code></pre>
+			</section>
+
+			<section>
+				<h2>Extending configuration options</h2>
+			</section>
+
+			<section>
+				<h3 class="no-text-transform">CKEditorPluginConfigurableInterface</h3>
+				<pre class="not-in-pdf"><code data-trim contenteditable class="php">
+&lt;?php
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface {
+  // ...
+
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginConfigurableInterface::settingsForm().
+   * Returns a settings form to configure this CKEditor plugin.
+   */
+  public function settingsForm(array $form, array &$form_state, Editor $editor) {
+    // Defaults
+    $config = [
+      'xmas_wishes' => '<p class="big">Ho! Ho! Ho!</p>',
+      'xmas_signature' => 'Santa Claus',
+      'xmas_link' => 'en.wikipedia.org/wiki/Santa_Claus'
+    ];
+    $settings = $editor->getSettings();
+    if (isset($settings['plugins']['xmas'])) {
+      $config = $settings['plugins']['xmas'];
+    }
+
+    $form['xmas_wishes'] = [
+      '#title' => t('Wishes'),
+      '#description' => t('Xmas wishes html content'),
+      '#type' => 'textfield',
+      '#default_value' => $config['xmas_wishes'],
+    ];
+
+    $form['xmas_signature'] = [
+      '#title' => t('Signature'),
+      '#description' => t('Signature of whos this wishes is from'),
+      '#type' => 'textfield',
+      '#default_value' => $config['xmas_signature'],
+    ];
+
+    $form['xmas_link'] = [
+      '#title' => t('Link'),
+      '#description' => t('Redirect link'),
+      '#type' => 'textfield',
+      '#default_value' => $config['xmas_link'],
+    ];
+
+    return $form;
+  }
+}
+				</code></pre>
+				<pre class="pdf-only"><code data-trim contenteditable class="php">
+class Xmas extends CKEditorPluginBase implements CKEditorPluginConfigurableInterface {
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginConfigurableInterface::settingsForm().
+   */
+  public function settingsForm(array $form, array &$form_state, Editor $editor) {
+    $config = [
+      'xmas_wishes' => '<p class="big">Ho! Ho! Ho!</p>',
+      'xmas_signature' => 'Santa Claus',
+      'xmas_link' => 'en.wikipedia.org/wiki/Santa_Claus'
+    ];
+    $settings = $editor->getSettings();
+    if (isset($settings['plugins']['xmas'])) {
+      $config = $settings['plugins']['xmas'];
+    }
+    $form['xmas_wishes'] = [ '#title' => t('Wishes'), '#type' => 'textfield',
+      '#default_value' => $config['xmas_wishes'],
+    ];
+    $form['xmas_signature'] = [ '#title' => t('Signature'), '#type' => 'textfield',
+      '#default_value' => $config['xmas_signature'],
+    ];
+    $form['xmas_link'] = [ '#title' => t('Link'), '#type' => 'textfield',
+      '#default_value' => $config['xmas_link'],
+    ];
+    return $form;
+  }
+}
+				</code></pre>
+			</section>
+
+			<section>
+				<h3 class="no-text-transform">CKEditorPluginContextualInterface</h3>
+				<pre class="not-in-pdf"><code data-trim contenteditable class="php">
+&lt;?php
+class Xmas extends CKEditorPluginBase implements CKEditorPluginContextualInterface {
+  // ...
+
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginContextualInterface::isEnabled().
+   * Checks if this plugin should be enabled based on the editor configuration.
+   */
+  public function isEnabled(Editor $editor) {
+    // Automatically enable this plugin if the DrupalImage is enabled.
+    $enabled = FALSE;
+    $settings = $editor->getSettings();
+    foreach ($settings['toolbar']['rows'] as $row) {
+      foreach ($row as $group) {
+        foreach ($group['items'] as $button) {
+          if ($button === 'DrupalImage') {
+            $enabled = TRUE;
+          }
+        }
+      }
+    }
+    return $enabled;
+  }
+}
+				</code></pre>
+				<pre class="pdf-only"><code data-trim contenteditable class="php">
+class Xmas extends CKEditorPluginBase implements CKEditorPluginContextualInterface {
+  /**
+   * Implements \Drupal\ckeditor\Plugin\CKEditorPluginContextualInterface::isEnabled().
+   */
+  public function isEnabled(Editor $editor) {
+    // Automatically enable this plugin if the DrupalImage is enabled.
+    $enabled = FALSE;
+    $settings = $editor->getSettings();
+    foreach ($settings['toolbar']['rows'] as $row) {
+      foreach ($row as $group) {
+        foreach ($group['items'] as $button) {
+          if ($button === 'DrupalImage') {
+            $enabled = TRUE;
+          }
+        }
+      }
+    }
+    return $enabled;
+  }
+}
+				</code></pre>
+			</section>
+
+			<section>
+				<h2>Video #5</h2>
+				<p>Install &amp; configure</p>
+				<ul>
+					<li>Xmas module is installed</li>
+					<li>Basic HTML text format configured
+						<ul>
+							<li>Xmas button added to toolbar</li>
+							<li>Xmas configration left with defaults</li>
+						</ul>
+					</li>
+					<li>Full HTML text format configured
+						<ul>
+							<li>Xmas button added to toolbar</li>
+							<li>Xmas configration updated</li>
+						</ul>
+					</li>
+					<li>Result for both text formats</li>
+				</ul>
+			</section>
+
+			<section>
+				<video width="960" height="640" src="videos/plugins/install-configure.mp4" type="video/mp4" controls data-autoplay></video>
+			</section>
+
+		</section>
+
+		<section>
+			<h2>Security</h2>
+			<ul>
+				<li>Drupal stores content as is, which is a potential threat for WYSIWYG editors</li>
+				<li>ACF != security filter</li>
+				<li>XSS protection included: security filters (<code>TYPE_HTML_RESTRICTOR</code>) are run before content can be edited in WYSIWYG editor</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>HTML Filter <small>vs.</small> ACF</h2>
+			<ul>
+				<li>HTML Filter enabled <-> ACF enabled</li>
+				<li>HTML Filter disabled <-> ACF disabled</li>
+			</ul>
+			<p>Need HTML Filter disabled &amp; ACF enabled?</p>
+			<pre><code data-trim contenteditable class="php">
+/**
+* Implements hook_editor_js_settings_alter
+* @param array $settings
+*/
+function mymodule_editor_js_settings_alter(array &$settings) {
+  if (empty($settings['editor']['formats']['full_html'])) {
+    return;
+  }
+
+  $full_html = &$settings['editor']['formats']['full_html'];
+  if ($full_html['editorSettings']['allowedContent'] === true) {
+    unset($full_html['editorSettings']['allowedContent']);
+  }
+}
+				</code></pre>
+		</section>
+
+		<section>
+			<h2>Migrating from Drupal 7</h2>
+			<ul>
+				<li>No way to port CKEditor profiles from D6/D7. Many options from CKEditor module for Drupal 7 are unsupported in D8 and require writing a module</li>
+				<li><a href="https://drupal.org/project/wysiwyg_linebreaks">wysiwyg_linebreaks</a> module for handling content that used auto-paragraph filter</li>
+				<li>Use Migrate API to port &amp; transform content</li>
+				<li>Write plugins, widgets to allow editing custom markup</li>
+				<li><a href="http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-protectedSource">config.protectedSource</a> - if hiding in WYSIWYG mode is enough</li>
+			</ul>
+		</section>
+
+		<section class="last-slide">
+			<h1>The End</h1>
+			<ul>
+				<li><a href="https://github.com/wwalc/ckeditor-in-drupal-8">https://github.com/wwalc/ckeditor-in-drupal-8</a></li>
+				<li><a href="https://github.com/vokiel/xmas">https://github.com/vokiel/xmas</a></li>
+				<li><a href="https://github.com/wwalc/colorbutton">https://github.com/wwalc/colorbutton</a></li>
+				<li><a href="https://github.com/wwalc/panelbutton">https://github.com/wwalc/panelbutton</a></li>
+			</ul>
+		</section>
+	</div>
+
+</div>
+
+<script src="src/reveal/lib/js/head.min.js"></script>
+<script src="src/reveal/js/reveal.min.js"></script>
+
+<script>
+
+	// Full list of configuration options available here:
+	// https://github.com/hakimel/reveal.js#configuration
+	Reveal.initialize({
+		controls: true,
+		progress: true,
+		history: true,
+		center: true,
+		margin: 0.01,
+		// Backspace
+		keyboard: {
+			08: 'prev',
+			13: function() {
+				var video = document.querySelector('.present video');
+				if (video) {
+					video.paused ? video.play() : video.pause();
+				}
+			}
+		},
+
+		theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+		transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+		// Optional libraries used to extend on reveal.js
+		dependencies: [
+			{ src: 'src/fullscreen-img/fullscreen-img.js'},
+			{ src: 'src/reveal/lib/js/classList.js', condition: function () {
+				return !document.body.classList;
+			} },
+//			{ src: 'src/reveal/plugin/markdown/marked.js', condition: function () {
+//				return !!document.querySelector('[data-markdown]');
+//			} },
+//			{ src: 'src/reveal/plugin/markdown/markdown.js', condition: function () {
+//				return !!document.querySelector('[data-markdown]');
+//			} },
+			{ src: 'src/reveal/plugin/highlight/highlight.js', async: true, callback: function () {
+				hljs.initHighlightingOnLoad();
+			} },
+			{ src: 'src/reveal/plugin/zoom-js/zoom.js', async: true, condition: function () {
+				return !!document.body.classList;
+			} },
+			{ src: 'src/reveal/plugin/notes/notes.js', async: true, condition: function () {
+				return !!document.body.classList;
+			} }
+		]
+	});
+
+</script>
+
+</body>
+</html>
