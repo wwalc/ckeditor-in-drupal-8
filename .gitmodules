@@ -1,9 +1,0 @@
-[submodule "src/fullscreen-img"]
-	path = src/fullscreen-img
-	url = git://github.com/regisb/reveal.js-fullscreen-img.git
-[submodule "src/reveal"]
-	path = src/reveal
-	url = git://github.com/hakimel/reveal.js.git
-[submodule "src/jstree"]
-	path = src/jstree
-	url = git://github.com/vakata/jstree.git
