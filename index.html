@@ -513,30 +513,27 @@
 				<table style="width:850px" class="narrow">
 					<tr>
 						<td><pre><code class="xml">(MathJax is run)
-...
-    &lt;span id="preview"&gt;*Rendered* formula&lt;/span&gt;
-...
-</code></pre></td>
-						<td style="width:170px;">&nbsp;</td>
-					</tr>
-					<tr>
-						<td><pre><code class="xml">&lt;span class="math-tex" data-cke-widget-data="..."&gt;
+
+&lt;span class="math-tex" data-cke-widget-data="..."&gt;
   &lt;iframe&gt;
     &lt;script src="MathJax.js?config=TeX-AMS_HTML"&gt;&lt;/script&gt;
     ...
     &lt;span id="preview"&gt; LaTeX formula &lt;/span&gt;
   &lt;/iframe&gt;
 &lt;/span&gt;</code></pre></td>
-						<td><span class="action">&#x21e1; [Data]</span></td>
 					</tr>
 					<tr>
-						<td><pre><code class="xml">&lt;span class="math-tex"
-      data-cke-widget-data="LaTeX formula..."&gt;&lt;/span&gt;</code></pre></td>
-						<td><span class="action">&#x21e1; Init</span></td>
+						<td style="position:relative;height: 3em">
+							<!-- Kudos for @vokiel for providing this list! :) -->
+							<ul style="list-style-type: none;width: 100%;">
+								<li style="margin-left: 0.5em;float: left;display: inline-block;margin-top: 1em;">Upcast &#x21e2; Init &#x21e2; Data</li>
+								<li style="float:left; display: inline-block;margin-left: -1.4em;">&#x21e1;</li>
+								<li style="float:right; display: inline-block;margin: 1em 0.6em 0 0;">Downcasting&#x21e3;</li>
+								<li style="margin-left: 1.8em;clear: both;">&#x21e1;</li>
+							</ul>
 					</tr>
 					<tr>
 						<td><pre><code class="xml">&lt;span class="math-tex"&gt; LaTeX formula &lt;/span&gt;</code></pre></td>
-						<td><span class="action">&#x21e1; Upcast</span></td>
 					</tr>
 				</table>
 			</section>
@@ -551,7 +548,7 @@
 			</section>
 
 			<section>
-				<table style="width:850px">
+				<table class="narrow">
 					<tr>
 						<td><pre><code class="xml" style="overflow:hidden">(HighLightJS is run)
 
@@ -565,16 +562,16 @@
 &lt;/pre&gt;</code></pre></td>
 
 					</tr>
-					<tr><td><span>&#x21e1; [Data]</span></td></tr>
 					<tr>
-						<td><pre><code class="xml">&lt;pre data-cke-widget-data="..."&gt;
-  &lt;code class="language-php hljs">
-    some code
-  &lt;/code&gt;
-&lt;/pre&gt;</code></pre></td>
-
+						<td style="position:relative;height: 3em">
+							<!-- Kudos for @vokiel for providing this list! :) -->
+							<ul style="list-style-type: none;width: 100%;">
+								<li style="margin-left: 0.5em;float: left;display: inline-block;margin-top: 1em;">Upcast &#x21e2; Init &#x21e2; Data</li>
+								<li style="float:left; display: inline-block;margin-left: -1.4em;">&#x21e1;</li>
+								<li style="float:right; display: inline-block;margin: 1em 0.6em 0 0;">Downcasting&#x21e3;</li>
+								<li style="margin-left: 1.8em;clear: both;">&#x21e1;</li>
+							</ul>
 					</tr>
-					<tr><td><span>&#x21e1; Upcasting</span><span style="float:right">Downcasting &#x21e3;</span></td></tr>
 					<tr>
 						<td><pre><code class="xml">&lt;pre&gt;&lt;code class="language-php"> some code &lt;/code&gt;&lt;/pre&gt;</code></pre></td>
 
@@ -605,19 +602,16 @@
 &lt;/div&gt;</code></pre></td>
 
 					</tr>
-					<tr><td><span>&#x21e1; [Data]</span></td></tr>
 					<tr>
-						<td><pre><code class="xml">&lt;div class="chartjs" data-chart="bar" data-chart-value="[{...(JSON)...}]"&gt;
-
-    [empty elements]
-    -------------------------------------
-    &lt;canvas&gt;&lt;/canvas&gt;
-    &lt;div class="chartjs-legend"&gt;&lt;/div&gt;
-    -------------------------------------
-&lt;/div&gt;</code></pre></td>
-
+						<td style="position:relative;height: 3em">
+							<!-- Kudos for @vokiel for providing this list! :) -->
+							<ul style="list-style-type: none;width: 100%;">
+								<li style="margin-left: 0.5em;float: left;display: inline-block;margin-top: 1em;">Upcast &#x21e2; Init &#x21e2; Data</li>
+								<li style="float:left; display: inline-block;margin-left: -1.4em;">&#x21e1;</li>
+								<li style="float:right; display: inline-block;margin: 1em 0.6em 0 0;">Downcasting&#x21e3;</li>
+								<li style="margin-left: 1.8em;clear: both;">&#x21e1;</li>
+							</ul>
 					</tr>
-					<tr><td><span>&#x21e1; Upcasting</span><span style="float:right">Downcasting &#x21e3;</span></td></tr>
 					<tr>
 						<td><pre><code class="xml">&lt;div class="chartjs" data-chart="bar" data-chart-value="[{...(JSON)...}]"&gt;&lt;/div&gt;</code></pre></td>
 
