@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>CKEditor in Drupal 8 &ndash; The New Possibilities</title>
+
+	<meta name="description" content="">
+	<meta name="author" content="Wiktor Walc">
+
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="src/reveal/css/reveal.min.css">
+	<link rel="stylesheet" href="css/sky.css" id="theme">
+	<link rel="stylesheet" href="css/custom.css">
+
+	<!-- For syntax highlighting -->
+	<!--<link rel="stylesheet" href="src/reveal/lib/css/zenburn.css">-->
+	<link rel="stylesheet" href="css/github.css">
+
+	<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+	<script>
+		if (window.location.search.match(/print-pdf/gi)) {
+			// Default reveal print file
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'src/reveal/css/print/pdf.css';
+			document.getElementsByTagName('head')[0].appendChild(link);
+
+			// Custom print file
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = 'css/pdf.css';
+			document.getElementsByTagName('head')[0].appendChild(link);
+		}
+	</script>
+
+	<!--[if lt IE 9]>
+	<script src="src/reveal/lib/js/html5shiv.js"></script>
+	<![endif]-->
+
+</head>
+
+<body>
+
+<div class="reveal">
+
+	<div class="slides">
+		<section data-background="images/amsterdam_big.jpg" data-background-size="2100px" class="drupalcon">
+			<div>
+				<div style="height:250px;padding-top: 20px">
+					<img src="images/amsterdam_logo.png" style="width:420px" alt="DrupalCon Amsterdam Logo" />
+				</div>
+				<h1 style="color:#FFFFFF">CKEditor in Drupal 8</h1>
+				<div class="redbox">
+				Wiktor Walc
+				</div>
+				<h5>Site Building &ndash; September 30, 2014</h5>
+			</div>
+		</section>
+
+		<section>
+			<h2>About Me</h2>
+			<ul style="margin-top: 1em">
+				<li>CKEditor Module Maintainer for Drupal 6/7</li>
+				<li>
+					<p>CTO @ <img src="images/cksource_logo.png" width="160" style="margin-bottom: 0px" /></p>
+					<p><img src="images/ckeditor_logo.png" width="400" style="padding: 1em;margin-left:100px" /></p>
+				</li>
+			</ul>
+
+
+		</section>
+		<section>
+			<h1>Agenda</h1>
+			<ul>
+				<li>The status of WYSIWYG editing in Drupal 7</li>
+				<li>New features offered by CKEditor &amp; Text Editor modules</li>
+				<li>What is ACF and how it works</li>
+				<li>Widgets: why use them and what they offer</li>
+				<li>Widgets: the new image plugin in Drupal 8</li>
+				<li>Adding plugins to CKEditor</li>
+				<li>Security: HTML Filter vs. ACF</li>
+				<li>Migration</li>
+			</ul>
+		</section>
+
+		<section>
+			<section>
+				<h2>Drupal 7</h2>
+				<p><img src="images/drupal7_plain_textarea.png" alt="Default editor in Drupal 7 (plain textarea)." /></p>
+			</section>
+
+			<section>
+				<h2 style="display:none">&#x2639;</h2>
+				<img src="images/crying_baby_1024.jpg" alt="crying baby" />
+				<p class="copyrights"><a href="https://www.flickr.com/photos/donnieray/10584676434">https://www.flickr.com/photos/donnieray/10584676434</a></p>
+			</section>
+
+			<section>
+				<h2>Drupal 7</h2>
+				<ul>
+					<li>Contributed modules: <a href="https://www.drupal.org/project/wysiwyg">WYSIWYG</a> and <a href="https://www.drupal.org/project/ckeditor">CKEditor</a></li>
+					<li class="fragment">Together <strong>575 000</strong> installations in Drupal 7</li>
+					<li class="fragment" style="list-style-type:none;margin-top:1em;margin-bottom:1em"><strong>Awesome! But...</strong></li>
+					<li class="fragment" style="margin-top:1em">
+						<p>Research</p>
+						<ul>
+							<li>Which module to use?</li>
+							<li>Which editor to use?</li>
+							<li>What distribution of editor to use?</li>
+						</ul>
+					</li>
+					<li class="fragment">Installation, testing, configuration</li>
+					<li class="fragment">Maintenance (updating, etc.)</li>
+				</ul>
+			</section>
+
+			<section>
+				<h3>...and</h3>
+				<p class="left">Popular WTFs</p>
+					<ul>
+						<li><cite><em>Images are lost after saving node</em></cite> (CKEditor Toolbar vs. Text format configuration mismatch)</li>
+						<li>Confusion: installed CKEditor module but need to download CKEditor (the editor)? o_O</li>
+					</ul>
+			</section>
+		</section>
+
+		<section>
+			<h2>Drupal 8</h2>
+			<ul>
+				<li class="fragment">CKEditor in core. No need to search, test, install.</li>
+				<li class="fragment">
+					<p>575 000 x 1.5h = 860 000h available for fun &#x263a;</p>
+					<p class="fragment" style="text-align:center"><img src="images/meme-x-all-the-y.jpg" alt="Yes!!" width="500" /></p>
+				</li>
+			</ul>
+		</section>
+
+		<section>
+			<section>
+				<h2>Drupal 8</h2>
+				<ul>
+					<li>Select text editor straight in "Text formats and editors" administration page</li>
+					<li>Drag &amp; drop toolbar configurator for CKEditor</li>
+					<li>HTML filter settings automatically updated</li>
+					<li>Nice API for registering additional CKEditor plugins, enhancing CKEditor configuration form</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Demo #1</h2>
+				<p>How CKEditor toolbar configuration triggers an automatic update of Allowed HTML tags list</p>
+			</section>
+
+			<!--
+			<section class="video-description">
+				<h2>Video #1</h2>
+				<p>Basic HTML text format is configured:</p>
+				<ul>
+					<li>CKEditor button (Table) is added to the toolbar using D&amp;D</li>
+					<li>Allowed HTML tags list is automatically updated with &lt;table&gt;, &lt;tr&gt;, &lt;th&gt;, &lt;td&gt; tags</li>
+					<li>Another button (Underline) is added using D&amp;D to the toolbar</li>
+					<li>&lt;u&gt; is automatically added to Allowed HTML tags list</li>
+					<li>The Underline button is removed from toolbar</li>
+					<li>&lt;u&gt; is automatically removed from Allowed HTML tags list</li>
+					<li>The Styles dropdown is added using D&amp;D</li>
+					<li>A configuration tab for the Styles plugin is immediately shown</li>
+					<li>After defining styles for &lt;h2&gt; and &lt;h3&gt;, the entered configuration is immediately picked up and the list of allowed HTML tags is again extended</li>
+				</ul>
+			</section>
+			-->
+
+			<section>
+				<video width="920" height="628" src="videos/text_format_configuration1.mp4" controls data-autoplay>
+				</video>
+			</section>
+
+			<section>
+				<h2>Demo #2</h2>
+				<p>How automatic update of Allowed HTML tags list works when buttons (features) are removed</p>
+			</section>
+
+			<!--
+			<section class="video-description">
+				<h2>Video #2</h2>
+				<p>Basic HTML text format is configured again:</p>
+				<ul>
+					<li>Strike button is added to the toolbar</li>
+					<li>&lt;s&gt; is automatically added to Allowed HTML tags list</li>
+					<li>The form with text format configuration is saved</li>
+					<li>An article with striked text (&lt;s&gt; tag) is created</li>
+					<li>Basic HTML text format is configured again</li>
+					<li>Strike button is removed from CKEditor toolbar</li>
+					<li>This time &lt;s&gt; tag is not removed automatically because it could have been used in existing content</li>
+					<li>An article is edited again in CKEditor</li>
+					<li>Altough Strike button is no longer available in CKEditor toolbar, &lt;s&gt; tag is not removed</li>
+				</ul>
+			</section>
+			-->
+
+			<section>
+				<video width="920" height="628" src="videos/text_format_configuration2.mp4" controls data-autoplay></video>
+			</section>
+		</section>
+
+		<section>
+			<section>
+			<h3>ACF <small>(Advanced Content Filter)</small></h3>
+			</section>
+
+			<section>
+				<h3>ACF strips <s>unwanted content</s></h3>
+				<img src="images/bieber_mugshot.jpg" alt="Justin Bieber mug shot" />
+				<p class="copyrights">Source: Miami-Dade Police Department</p>
+			</section>
+
+			<section>
+				<h3>ACF <small>(Advanced Content Filter)</small></h3>
+				<ul>
+					<li>Everything that is not allowed is removed</li>
+					<li>Works also when pasting content &ndash; WYSIWYG!
+						<p><small>No need to submit form and wait for the server-side filter to remove disallowed tags to see the final markup</small></p></li>
+					<li>Smart (transformations - stripping tags, not content)</li>
+				</ul>
+			</section>
+
+			<section>
+				<p>Switching text formats? Remember about ACF</p>
+				<img src="images/changing_text_format.png" width="310" height="229" alt="Warning when switching text formats" />
+			</section>
+
+			<section>
+				<h2>Demo #3</h2>
+				<p>Live example of how ACF works on different text formats</p>
+			</section>
+
+			<!--
+			<section class="video-description">
+				<h2>Video #3</h2>
+				<p>Results of pasting content in different text formats:</p>
+				<ul>
+					<li>CKEditor is enabled on Restricted HTML format</li>
+					<li>An article is created with Restricted HTML text format</li>
+					<li>In CKEditor source mode &lt;script&gt; and &lt;footer&gt; are pasted</li>
+					<li>After switching to WYSIWYG mode, both disallowed tags are gone but content of a footer is kept</li>
+					<li>Part of an HTML page with headers and a table is copied and pasted in Google Chrome; both tags are disallowed in this format</li>
+					<li>ACF removes disallowed tags, but again the content from headers and table cells is preserved</li>
+					<li>The format of article is changed to Basic HTML</li>
+					<li>The same content is pasted again; this time tables and headers are not removed because we allow it in this format</li>
+					<li>Font colors are disallowed, however, so inline styles are removed by CKEditor</li>
+				</ul>
+			</section>
+
+			<section class="video-description">
+				<p>Results of pasting content in different text formats (continued)</p>
+				<ul>
+					<li>The format of article is changed to Full HTML.</li>
+					<li>The same content is pasted again; this time nothing is removed because ACF is disabled here.</li>
+					<li>The same portion of the HTML page is copied & pasted in Firefox.</li>
+					<li>Even though ACF is disabled, the font color isn't copied. Why? Because browsers are different: Firefox copies just the HMTL structure, while Chrome copies HTML and "the layout". Need consistency? Use ACF.</li>
+				</ul>
+			</section>
+			-->
+
+			<section>
+				<video width="920" height="628" src="videos/acf.mp4" controls data-autoplay></video>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>Editing possibilities</h2>
+				<ul>
+					<li>Classic editor</li>
+					<li>Inline editor</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Administration backend</h2>
+
+				<h3>"Classic" editor</h3>
+				<ul>
+					<li>&lt;iframe&gt; &ndash; based</li>
+					<li>CSS-styles are <strong>not</strong> inherited from admin theme</li>
+					<li>Themes may register dedicated stylesheet for CKEditor through an entry in their .info file:
+					</li>
+				</ul>
+				<p class="code">
+					<pre><code class="no-highlight">ckeditor_stylesheets:
+    - css/ckeditor-iframe.css</code></pre>
+				</p>
+			</section>
+
+			<section>
+				<p class="pdf-only">Classic editor in action, note the CSS styles in WYSIWYG area:</p>
+				<img src="images/classic_editor.png" class="standalone-img" alt="Classic editor in Drupal 8"/>
+			</section>
+
+			<section>
+				<h2>Quick editing</h2>
+
+				<h3>"Inline" editor</h3>
+				<ul>
+					<li>No &lt;iframe&gt;!</li>
+					<li>CSS-styles are inherited; the content looks exactly the same both in editor and on website.</li>
+					<li class="fragment">Real WYSIWYG, finally!</li>
+				</ul>
+			</section>
+
+			<section>
+				<p class="pdf-only">Handy quick edit option in Drupal 8:</p>
+				<img src="images/node_with_quickedit_link.png" class="standalone-img" alt="Linkt to quick editing in Drupal 8" />
+			</section>
+
+			<section>
+				<p class="pdf-only">Editing node using quick edit feature:</p>
+				<img src="images/quickedit.png" class="standalone-img" alt="Quick editing in Drupal 8" />
+				<p class="pdf-only">Note that CSS styles did not change!</p>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>Styling content</h2>
+				<ul>
+					<li>CSS style definitions set in themes' CSS files</li>
+					<li>Selected style definitions (using CSS classes) available in Styles dropdown list</li>
+					<li>Separate: semantic markup and visual presentation</li>
+					<li>Handy: consistent styling, less work overall</li>
+				</ul>
+			</section>
+
+			<section>
+				<h2>Inline styles?</h2>
+				<p class="morespace">How to enable <em>Text/Background Color</em> buttons in Drupal 8?</p>
+				<ul class="fragment">
+					<li>CKEditor in Drupal Core != CKEditor "Full" preset</li>
+					<li class="fragment">But... additional plugins might be added!
+						<p style="text-align:center">
+						<img src="images/extend-ckeditor.png" alt="Administration interface with checkboxes to enable additional modules" width="697" height="356" class="fragment"/>
+						</p>
+					</li>
+				</ul>
+			</section>
+
+			<section>
+				<p class="pdf-only">Enabled Color buttons in Full HTML text format:</p>
+				<img src="images/full_html_colors.png" class="standalone-img" alt="Full HTML toolbar with color buttons" />
+			</section>
+
+			<section>
+				<img src="images/saurians3.jpg" alt="Funny web page - example" />
+				<p class="copyrights"><a href="http://angels-heaven.org">http://angels-heaven.org</a></p>
+			</section>
+		</section>
+
+		<section>
+			<h1>Widgets</h1>
+			<ul>
+				<li>Introduced in CKEditor 4.3 (2013 Q4, exactly a year ago).</li>
+				<li><strong>Rich content units</strong> that act as a <strong>single entity</strong>.</li>
+				<li>Any CKEditor plugin can provide widgets thanks to the <a href="http://ckeditor.com/addon/widget">Widget plugin</a>.</li>
+			</ul>
+		</section>
+
+		<section>
+			<section>
+			<h2>Widgets <small>vs</small> Templates</h2>
+			</section>
+
+			<section>
+				<h2>Templates</h2>
+				<ul>
+					<li>HTML snippets that behave like normal HTML after being pasted into editor.</li>
+					<li><strong>No control</strong> &ndash; easy to break, delete part of the content.</li>
+					<li>No Drag &amp; Drop support.</li>
+					<li>By default not available in Drupal 8<sup><a href="#fn1" id="r1">*</a></sup>.</li>
+				</ul>
+				<p id="fn1" class="footnote"><a href="#r1">*</a> Any plugin that inserts complicated HTML structure suffers from the same issues as the template plugin.</p>
+			</section>
+
+			<section>
+				<h2>Templates in action</h2>
+				<img src="images/templates.png" alt="Templates dialog window in CKEditor">
+
+			</section>
+
+			<section>
+				<h2>Sample template</h2>
+				<img src="images/templates2.png" alt="Image and Title template inserted in CKEditor"  width="455" height="312">
+			</section>
+
+			<section>
+				<h2>Common issues</h2>
+				<img src="images/templates7.png" alt="Table in the middle of title" />
+				<br style="displa:block;margin: 10px 0;">
+				<img src="images/templates6.png" alt="Case with deleted image and orphaned title." />
+			</section>
+
+			<section>
+				<h2>Solution?</h2>
+			</section>
+
+			<section>
+				<h2>Widgets!</h2>
+				<ul style="text-align: left">
+					<li class="fragment">Select, copy, paste and delete as a whole.</li>
+					<li class="fragment">Drag and drop as a whole.</li>
+					<li class="fragment">Editable parts (with separate ACF rules!).</li>
+					<li class="fragment">Upcasting & downcasting to a simpler data format.</li>
+					<li class="fragment">Common dialog, context menu. Consistent look and feel.</li>
+					<li style="margin-top: 1em;list-style-type: none" class="fragment">Perfect UX. Bulletproof. Powerful.</li>
+				</ul>
+				<p class="footer"></p>
+			</section>
+
+			<section>
+				<h2>Simple Box Widget</h2>
+				<img src="images/simplebox5.png" alt="Simple Box Widget in CKEditor"/>
+				<p><strong>Tutorial: </strong> <a href="http://docs.ckeditor.com/#!/guide/widget_sdk_tutorial_1">Creating CKEditor Widget</a></p>
+			</section>
+		</section>
+
+		<section>
+			<h1>Widget examples</h1>
+		</section>
+
+		<section>
+			<section>
+				<h2>Video #4</h2>
+				<p>New Image Plugin in Drupal</p>
+			</section>
+
+			<section>
+				<video width="920" height="628" src="videos/image.mp4" controls data-autoplay>
+				</video>
+			</section>
+
+			<section>
+				<h2>Downcasted image</h2>
+				<p>"Data" form saved in a database:</p>
+				<pre><code class="html">&lt;img alt="JavaScript Logo"
+     data-align="right"
+     data-caption="JavaScript Logo"
+     data-editor-file-uuid="8025f271-1db8-45cb-9400-f166c4683495"
+     height="220"
+     src="/sites/default/files/inline-images/JavaScript-logo.png"
+     width="220" /&gt;</code></pre>
+			</section>
+
+			<section>
+				<h2>Upcasted image:</h2>
+				<p></p>
+				<pre><code class="xml">&lt;div class="align-right cke_widget_block ..." contenteditable="false"&gt;
+  --------------------------------------------------------------------
+  &lt;figure class="caption caption-img" data-widget="image" ... &gt;
+      &lt;img alt="JavaScript Logo"
+           height="220"
+           src="/sites/default/files/inline-images/JavaScript-logo.png"
+           width="220" &gt;
+      &lt;figcaption contenteditable="true">JavaScript Logo&lt;/figcaption&gt;
+  &lt;/figure&gt;
+  --------------------------------------------------------------------
+  &lt;span class="cke_widget_drag_handler_container ..."&gt;...&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+			</section>
+
+			<section>
+				<h2>FilterCaption</h2>
+				<p>FilterCaption filter in Drupal scans for images with <code>data-caption</code> attribute and wraps them with:</p>
+				<pre><code>&lt;figure class="caption caption-img {{ classes }}"&gt;
+    {{ img }}
+    &lt;figcaption&gt;{{ caption }}&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+			</section>
+
+			<section>
+				<table style="width:700px">
+				<tr><td rowspan="6" style="width:140px"><span class="ckeditor270">CKEditor</span><span class="drupal270">Drupal</span></td><td></td></tr>
+				<tr><td><pre><code>&lt;figure&gt;
+					&lt;img src="..."&gt;
+					&lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+				</td></tr>
+				<tr><td><span>&#x21e1; Upcasting</span><span style="float:right">Downcasting &#x21e3;</span></td></tr>
+				<tr><td><pre><code>&lt;img src="..." data-caption="..."&gt;</code></pre></td></tr>
+				<tr><td style="text-align: center;border-top:1px dotted #999;padding-top:10px"><span>FilterCaption &#x21e3;</span></td></tr>
+				<tr><td><pre><code>&lt;figure&gt;
+					&lt;img src="..."&gt;
+					&lt;figcaption&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre></td></tr>
+				</table>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>MathJax</h2>
+				<img src="images/mathjax.png" alt="Matematic formulas in CKEditor"/>
+				<br />
+				<img src="images/mathjax2.png" alt="Matematic formulas in CKEditor - source mode"/>
+			</section>
+
+			<section>
+				<table style="width:850px" class="narrow">
+					<tr>
+						<td><pre><code class="xml">(MathJax is run)
+...
+    &lt;span id="preview"&gt;*Rendered* formula&lt;/span&gt;
+...
+</code></pre></td>
+						<td style="width:170px;">&nbsp;</td>
+					</tr>
+					<tr>
+						<td><pre><code class="xml">&lt;span class="math-tex" data-cke-widget-data="..."&gt;
+  &lt;iframe&gt;
+    &lt;script src="MathJax.js?config=TeX-AMS_HTML"&gt;&lt;/script&gt;
+    ...
+    &lt;span id="preview"&gt; LaTeX formula &lt;/span&gt;
+  &lt;/iframe&gt;
+&lt;/span&gt;</code></pre></td>
+						<td><span class="action">&#x21e1; [Data]</span></td>
+					</tr>
+					<tr>
+						<td><pre><code class="xml">&lt;span class="math-tex"
+      data-cke-widget-data="LaTeX formula..."&gt;&lt;/span&gt;</code></pre></td>
+						<td><span class="action">&#x21e1; Init</span></td>
+					</tr>
+					<tr>
+						<td><pre><code class="xml">&lt;span class="math-tex"&gt; LaTeX formula &lt;/span&gt;</code></pre></td>
+						<td><span class="action">&#x21e1; Upcast</span></td>
+					</tr>
+				</table>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>Code Snippet</h2>
+				<img src="images/codesnippet.png" alt="CodeSnippet in CKEditor"/>
+				<br />
+				<img src="images/codesnippet3.png" alt="Code Snippet in CKEditor - source mode" />
+			</section>
+
+			<section>
+				<table style="width:850px">
+					<tr>
+						<td><pre><code class="xml" style="overflow:hidden">(HighLightJS is run)
+
+&lt;pre data-cke-widget-data="..."&gt;
+  &lt;code class="language-php hljs">
+    (*highlighted* code)
+    &lt;span class="hljs-function"&gt;&lt;span class="hljs-keyword"&gt;function&lt;/span&gt;
+    &lt;span class="hljs-title"&gt;isEmpty&lt;/span&gt;&lt;span class="hljs-params"&gt;
+    ( object ) &lt;/span&gt; {&lt;/span&gt;...
+  &lt;/code&gt;
+&lt;/pre&gt;</code></pre></td>
+
+					</tr>
+					<tr><td><span>&#x21e1; [Data]</span></td></tr>
+					<tr>
+						<td><pre><code class="xml">&lt;pre data-cke-widget-data="..."&gt;
+  &lt;code class="language-php hljs">
+    some code
+  &lt;/code&gt;
+&lt;/pre&gt;</code></pre></td>
+
+					</tr>
+					<tr><td><span>&#x21e1; Upcasting</span><span style="float:right">Downcasting &#x21e3;</span></td></tr>
+					<tr>
+						<td><pre><code class="xml">&lt;pre&gt;&lt;code class="language-php"> some code &lt;/code&gt;&lt;/pre&gt;</code></pre></td>
+
+				</table>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>Chart</h2>
+				<img src="images/chart.png" alt="Chart in CKEditor"/>
+				<br />
+				<img src="images/chart2.png" alt="Chart - source code" />
+			</section>
+
+			<section>
+				<table class="narrow">
+					<tr>
+						<td><pre><code class="xml">(Chart.js is run)
+
+&lt;div class="chartjs" data-chart="bar" data-chart-value="[{...(JSON)...}]"&gt;
+
+    [rendered chart]
+    -------------------------------------
+    &lt;canvas&gt;&lt;/canvas&gt;
+    &lt;div class="chartjs-legend"&gt;&lt;/div&gt;
+    -------------------------------------
+&lt;/div&gt;</code></pre></td>
+
+					</tr>
+					<tr><td><span>&#x21e1; [Data]</span></td></tr>
+					<tr>
+						<td><pre><code class="xml">&lt;div class="chartjs" data-chart="bar" data-chart-value="[{...(JSON)...}]"&gt;
+
+    [empty elements]
+    -------------------------------------
+    &lt;canvas&gt;&lt;/canvas&gt;
+    &lt;div class="chartjs-legend"&gt;&lt;/div&gt;
+    -------------------------------------
+&lt;/div&gt;</code></pre></td>
+
+					</tr>
+					<tr><td><span>&#x21e1; Upcasting</span><span style="float:right">Downcasting &#x21e3;</span></td></tr>
+					<tr>
+						<td><pre><code class="xml">&lt;div class="chartjs" data-chart="bar" data-chart-value="[{...(JSON)...}]"&gt;&lt;/div&gt;</code></pre></td>
+
+				</table>
+			</section>
+		</section>
+
+		<section>
+			<h2>Widgets &ndash; Summary</h2>
+			<ul>
+				<li class="fragment">Complex data structures that will not break</li>
+				<li class="fragment">Convenient solution for using JavaScript presentation libraries in CKEditor</li>
+				<li class="fragment">Save simple forms, render rich forms in WYSIWYG</li>
+				<li class="fragment">
+					<p>Save simple forms, transform using filters in Drupal:</p>
+					<ul>
+						<li>Possible to change the visual format of a data structure at any moment!</li>
+						<li>Safe way to allow data that could lead to security threats if we allowed to simply enter any HMTL</li>
+					</ul>
+				</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>Writing plugins</h2>
+			<ul>
+				<li>Adding new plugins (e.g. from <a href="http://ckeditor.com/addons/plugins/all" target="_blank">addons repository</a>)</li>
+				<li>Extending the list of configuration options</li>
+			</ul>
+		</section>
+
+		<section>
+			<section>
+				<h2>Adding new plugins</h2>
+				<ul>
+					<li class="fragment">
+						<p>CKEditor Addons repository:</p>
+						<a href="http://ckeditor.com/addons/plugins/all" target="_blank">http://ckeditor.com/addons/plugins/all</a>
+					</li>
+					<li class="fragment">
+						<p>Own plugins:</p>
+						<ul>
+						<li><a href="http://docs.ckeditor.com/#!/guide/plugin_sdk_intro">CKEditor Plugin SDK</a> (tutorials!)</li>
+						<li><a href="http://docs.ckeditor.com/#!/guide/widget_sdk_intro">CKEditor Widget SDK</a> (tutorials!)</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+
+			<section>
+				<h3 style="font-size:1.7em">CKEditorPluginInterface</h3>
+				<p>(any plugin must implement)</p>
+				<ul class="interface-list">
+					<li>
+						<p><code>getDependencies(Editor $editor)</code></p>
+						<p>An array of required CKEditor plugins</p>
+					</li>
+					<li>
+						<p><code>getFile()</code></p>
+						<p>Path to plugin.js</p>
+					</li>
+					<li>
+						<p><code>getConfig(Editor $editor)</code></p>
+						<p>Configuration settings</p>
+					</li>
+				</ul>
+			</section>
+
+			<section>
+				<h3 style="font-size:1.7em">CKEditorPluginButtonsInterface</h3>
+				<p>(for plugins with toolbar buttons)</p>
+				<ul style="margin-top: 1em;width:700px">
+					<li><p>
+							<code class="interface">getButtons()</code> An array of buttons*
+						</p>
+						<ul style="margin-top: 1em;list-style-type:none">
+							<li>&ndash; <code>label</code></li>
+							<li>&ndash; <code>image, image_rtl</code> (icons)</li>
+							<li>...</li>
+						</ul>
+					</li>
+				</ul>
+				<p style="margin-top: 1em;">* list is used only in the administration backend.</p>
+			</section>
+
+			<section>
+				<h3 style="font-size:1.7em">CKEditorPluginConfigurableInterface</h3>
+				<p>(if you wish to provide settings form)</p>
+				<p class="left">
+					<code class="hook">settingsForm(array $form, ..., Editor $editor);</code></p>
+				<p style="margin-top:1em">
+				<img src="images/styles_configuration2.png" alt="Configuring styles for CKEditor" />
+				</p>
+			</section>
+
+			<section>
+				<h3 style="font-size:1.7em">CKEditorPluginContextualInterface</h3>
+				<p>(for plugins enabled under certain conditions)</p>
+				<ul style="margin-top: 1em;width:700px">
+					<li><p>
+						<code class="interface">isEnabled(Editor $editor)</code>
+					</p>
+					</li>
+				</ul>
+			</section>
+
+			<section>
+				<h3 class="no-text-transform">Namespace <a href="https://api.drupal.org/api/drupal/namespace/Drupal%21ckeditor/8" target="_blank">Drupal\ckeditor</a></h3>
+				<ul>
+					<li>
+						<p><a href="https://api.drupal.org/api/drupal/core%21modules%21ckeditor%21src%21CKEditorPluginInterface.php/interface/CKEditorPluginInterface/8" target="_blank">CKEditorPluginInterface</a></p>
+						<p>Example: <a href="https://github.com/wwalc/panelbutton">Panel Button</a></p>
+					</li>
+					<li>
+						<p><a href="https://api.drupal.org/api/drupal/core%21modules%21ckeditor%21src%21CKEditorPluginButtonsInterface.php/interface/CKEditorPluginButtonsInterface/8" target="_blank">CKEditorPluginButtonsInterface</a></p>
+						<p>Example: <a href="https://github.com/wwalc/colorbutton">Color Button</a></p>
+					</li>
+					<li>
+						<p><a href="https://api.drupal.org/api/drupal/core%21modules%21ckeditor%21src%21CKEditorPluginConfigurableInterface.php/interface/CKEditorPluginConfigurableInterface/8" target="_blank">CKEditorPluginConfigurableInterface</a></p>
+						<p>Example: <a href="https://github.com/drupal/drupal/blob/8.0.x/core/modules/ckeditor/src/Plugin/CKEditorPlugin/StylesCombo.php">Styles Combo</a></p>
+					</li>
+					<li>
+						<p><a href="https://api.drupal.org/api/drupal/core%21modules%21ckeditor%21src%21CKEditorPluginContextualInterface.php/interface/CKEditorPluginContextualInterface/8" target="_blank">CKEditorPluginContextualInterface</a></p>
+						<p>Example: <a href="https://github.com/wwalc/liststyle">List Style</a></p>
+					</li>
+				</ul>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h2>Custom Configuration</h2>
+			</section>
+
+			<section>
+				<h3>Simple Hook</h3>
+				<p class="left">
+					<code class="hook"><a href="https://api.drupal.org/api/drupal/core!modules!editor!editor.api.php/function/hook_editor_js_settings_alter/8">hook_editor_js_settings_alter</a>(array &amp;$settings)</code>
+				</p>
+				<ul style="margin-top:1em">
+					<li class="fragment">Allows setting any <a href="http://docs.ckeditor.com/#!/api/CKEDITOR.config">configuration option</a>.</li>
+					<li class="fragment">
+						<p>Including <strong>CKEditor skin</strong>:</p>
+						<p style="margin-top:1em"><a href="https://github.com/wwalc/moonocolor">Moono Color</a><br />a sample module with a skin for CKEditor in Drupal 8.</p>
+					</li>
+				</ul>
+			</section>
+		</section>
+
+		<section>
+			<h2>HTML Filter <small>vs.</small> ACF</h2>
+			<ul>
+				<li>HTML Filter enabled &lt;-&gt; ACF enabled</li>
+				<li>HTML Filter disabled &lt;-&gt; ACF disabled</li>
+			</ul>
+			<p style="margin-top:1em">Need HTML Filter disabled &amp; ACF enabled?</p>
+				<pre><code data-trim contenteditable class="php">/**
+* Implements hook_editor_js_settings_alter
+* @param array $settings
+*/
+function mymodule_editor_js_settings_alter(array &amp;$settings) {
+    if (empty($settings['editor']['formats']['full_html'])) {
+      return;
+    }
+
+    $full_html = &amp;$settings['editor']['formats']['full_html'];
+    if ($full_html['editorSettings']['allowedContent'] === true) {
+      unset($full_html['editorSettings']['allowedContent']);
+    }
+}</code></pre>
+		</section>
+
+		<section>
+			<h2>Security</h2>
+			<ul>
+				<li>Drupal stores content as is, which is a potential threat for WYSIWYG editors</li>
+				<li>ACF != security filter</li>
+				<li>XSS protection included: security filters (<code>TYPE_HTML_RESTRICTOR</code>) are run before content can be edited in WYSIWYG editor</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>Migrating from Drupal 7</h2>
+			<ul>
+				<li>No way to port CKEditor profiles from D6/D7</li>
+				<li><a href="https://drupal.org/project/wysiwyg_linebreaks">wysiwyg_linebreaks</a> module for handling content that used auto-paragraph filter</li>
+				<li>Use Migrate API to port &amp; transform content</li>
+				<li>Write plugins, widgets to allow editing custom markup</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>The End</h2>
+			<ul class="ghlinks">
+				<li><a href="https://github.com/wwalc/ckeditor-in-drupal-8">https://github.com/wwalc/ckeditor-in-drupal-8</a></li>
+				<li><a href="https://github.com/wwalc/colorbutton">https://github.com/wwalc/colorbutton</a></li>
+				<li><a href="https://github.com/wwalc/panelbutton">https://github.com/wwalc/panelbutton</a></li>
+				<li><a href="https://github.com/wwalc/colorbutton">https://github.com/wwalc/moonocolor</a></li>
+				<li><a href="https://github.com/wwalc/panelbutton">https://github.com/wwalc/liststyle</a></li>
+				<li><a href="https://github.com/wwalc/chart">https://github.com/wwalc/chart</a></li>
+			</ul>
+			<p style="margin-top:1em">
+				Follow CKEditor on Twitter: <a href="https://twitter.com/ckeditor">@ckeditor</a>
+			</p>
+			<p>
+				Contact me: <a href="https://twitter.com/w_walc">@w_walc</a> &#x2022; <a href="https://www.drupal.org/u/wwalc">wwalc</a>
+			</p>
+		</section>
+
+		<section data-background="images/amsterdam_big.jpg" data-background-size="2100px" class="drupalcon">
+			<div>
+				<div style="height:250px;padding-top: 20px">
+					<img src="images/amsterdam_logo.png" style="width:420px" alt="DrupalCon Amsterdam Logo" />
+				</div>
+				<h1 style="color:#FFFFFF">What did you think?</h1>
+				<div class="redbox evaluate">
+					Evaluate this session &ndash; amsterdam2014.drupal.org/schedule
+				</div>
+				<h4>Thank you!</h4>
+			</div>
+		</section>
+
+	</div>
+
+</div>
+
+<script src="src/reveal/lib/js/head.min.js"></script>
+<script src="src/reveal/js/reveal.min.js"></script>
+
+<script>
+
+	// Full list of configuration options available here:
+	// https://github.com/hakimel/reveal.js#configuration
+	Reveal.initialize({
+		controls: true,
+		progress: true,
+		history: true,
+		center: true,
+		margin: 0.01,
+		height: 700,
+		width: 960,
+		// Backspace
+		keyboard: {
+			'08': 'prev',
+			'13': function() {
+				var video = document.querySelector('.present > video');
+				if (video) {
+					video.paused ? video.play() : video.pause();
+				}
+			}
+		},
+
+		theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+		transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+		// Optional libraries used to extend on reveal.js
+		dependencies: [
+//			{ src: 'src/reveal/plugin/markdown/marked.js', condition: function () {
+//				return !!document.querySelector('[data-markdown]');
+//			} },
+//			{ src: 'src/reveal/plugin/markdown/markdown.js', condition: function () {
+//				return !!document.querySelector('[data-markdown]');
+//			} },
+			{ src: 'src/reveal/plugin/highlight/highlight.js', async: true, callback: function () {
+				hljs.initHighlightingOnLoad();
+			} },
+//			{ src: 'src/reveal/plugin/zoom-js/zoom.js', async: true, condition: function () {
+//				return !!document.body.classList;
+//			} },
+			{ src: 'src/reveal/plugin/notes/notes.js', async: true, condition: function () {
+				return !!document.body.classList;
+			} }
+		]
+	});
+
+</script>
+
+</body>
+</html>
