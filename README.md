@@ -7,7 +7,7 @@ CKEditor in Drupal 8 - The New Possibilities
 ### Installation
 
 ```
-git clone --recursive https://github.com/wwalc/drupalcon-ckeditor-in-drupal-8.git
+git clone --recursive https://github.com/wwalc/ckeditor-in-drupal-8.git
 ```
 Then open slides in a browser.
 
